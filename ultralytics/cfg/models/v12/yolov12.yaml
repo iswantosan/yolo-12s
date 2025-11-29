@@ -4,6 +4,7 @@
 
 # Parameters
 nc: 80 # number of classes
+scale: s # use scale 's' (width=0.50)
 scales: # model compound scaling constants, i.e. 'model=yolov12n.yaml' will call yolov12.yaml with scale 'n'
   # [depth, width, max_channels]
   n: [0.50, 0.25, 1024] # summary: 497 layers, 2,553,904 parameters, 2,553,888 gradients, 6.2 GFLOPs
@@ -31,9 +32,9 @@ head:
 
   - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
   - [[-1, 2], 1, Concat, [1]] # cat backbone P2
-  - [-1, 2, A2C2f, [128, False, -1]] # 14 (P2/4-small)
+  - [-1, 2, A2C2f, [256, False, -1]] # 14 (P2/4-small)
 
-  - [-1, 1, Conv, [128, 3, 2]]
+  - [-1, 1, Conv, [256, 3, 2]]
   - [[-1, 11], 1, Concat, [1]] # cat head P3
   - [-1, 2, A2C2f, [256, False, -1]] # 17 (P3/8-medium)
 
