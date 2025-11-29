@@ -22,15 +22,15 @@ backbone:
 
   # P2/4 - Enhanced for small objects (reduced for memory)
   - [-1, 1, Conv, [128, 3, 2, 1, 2]] # 1-P2/4 (reduced from 192 to 128)
-  - [-1, 2, A2C2f, [256, True, 1]] # 2-Enhanced attention untuk P2 (c2=256, a2=True, area=1, n=2) - reduced
+  - [-1, 2, A2C2f, [256, False, 1]] # 2-Enhanced attention untuk P2 (c2=256, a2=True, area=1, n=2) - reduced
 
   # P3/8 - Medium-small objects
   - [-1, 1, Conv, [256, 3, 2, 1, 4]] # 3-P3/8
-  - [-1, 2, A2C2f, [512, True, 1]] # 4-Enhanced attention untuk P3 (c2=512, a2=True, area=1, n=2) - reduced
+  - [-1, 2, A2C2f, [512, False, 1]] # 4-Enhanced attention untuk P3 (c2=512, a2=True, area=1, n=2) - reduced
 
   # P4/16 - Medium objects
   - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16
-  - [-1, 2, A2C2f, [512, True, 1]] # 6-Enhanced attention untuk P4 (c2=512, a2=True, area=1, n=2) - reduced
+  - [-1, 2, A2C2f, [512, False, 1]] # 6-Enhanced attention untuk P4 (c2=512, a2=True, area=1, n=2) - reduced
 
 # YOLO12 Enhanced Head for Small Objects (3-scale detection: P2, P3, P4) - P5 removed to save memory
 head:
