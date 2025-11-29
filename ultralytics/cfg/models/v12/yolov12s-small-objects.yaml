@@ -32,48 +32,30 @@ backbone:
   - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16
   - [-1, 4, A2C2f, [512, True, 4]] # 6-Enhanced attention untuk P4 (c2=512, a2=True, area=4, n=4)
 
-  # P5/32 - Large objects
-  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32
-  - [-1, 4, A2C2f, [1024, True, 4]] # 8-Enhanced attention untuk P5 (c2=1024, a2=True, area=4, n=4)
-
-  # Multi-scale pooling untuk better feature extraction
-  - [-1, 1, SPPF, [1024, 5]] # 9-SPPF (Spatial Pyramid Pooling Fast)
-
-# YOLO12 Enhanced Head for Small Objects (4-scale detection: P2, P3, P4, P5)
+# YOLO12 Enhanced Head for Small Objects (3-scale detection: P2, P3, P4) - P5 removed to save memory
 head:
-  # Upsample dari P5 ke P4 (gunakan output SPPF dari layer 9)
-  - [9, 1, nn.Upsample, [None, 2, "nearest"]] # 10
-  - [[-1, 6], 1, Concat, [1]] # 11 cat backbone P4
-  - [-1, 1, Conv, [512, 1, 1]] # 12 Feature fusion layer
-  - [-1, 3, A2C2f, [512, True, 4]] # 13 Enhanced processing (c2=512, a2=True, area=4, n=3)
-
   # Upsample dari P4 ke P3
-  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 14
-  - [[-1, 4], 1, Concat, [1]] # 15 cat backbone P3
-  - [-1, 1, Conv, [256, 1, 1]] # 16 Feature fusion layer
-  - [-1, 4, A2C2f, [256, True, 4]] # 17 P3/8-medium-small (c2=256, a2=True, area=4, n=4) - ENHANCED
+  - [6, 1, nn.Upsample, [None, 2, "nearest"]] # 7 - start from P4 (layer 6)
+  - [[-1, 4], 1, Concat, [1]] # 8 cat backbone P3
+  - [-1, 1, Conv, [256, 1, 1]] # 9 Feature fusion layer
+  - [-1, 3, A2C2f, [256, True, 4]] # 10 Enhanced processing (c2=256, a2=True, area=4, n=3)
 
   # Upsample dari P3 ke P2 (untuk very small objects)
-  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 18
-  - [[-1, 2], 1, Concat, [1]] # 19 cat backbone P2
-  - [-1, 1, Conv, [256, 1, 1]] # 20 Feature fusion layer
-  - [-1, 4, A2C2f, [256, True, 4]] # 21 P2/4-xsmall (c2=256, a2=True, area=4, n=4) - ENHANCED untuk BTA
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 11
+  - [[-1, 2], 1, Concat, [1]] # 12 cat backbone P2
+  - [-1, 1, Conv, [256, 1, 1]] # 13 Feature fusion layer
+  - [-1, 4, A2C2f, [256, True, 4]] # 14 P2/4-xsmall (c2=256, a2=True, area=4, n=4) - ENHANCED untuk BTA
 
   # Downsample dari P2 ke P3
-  - [-1, 1, Conv, [256, 3, 2]] # 22
-  - [[-1, 17], 1, Concat, [1]] # 23 cat head P3
-  - [-1, 3, A2C2f, [256, True, 4]] # 24 P3/8-small (c2=256, a2=True, area=4, n=3)
+  - [-1, 1, Conv, [256, 3, 2]] # 15
+  - [[-1, 10], 1, Concat, [1]] # 16 cat head P3 (concat dengan layer 10)
+  - [-1, 3, A2C2f, [256, True, 4]] # 17 P3/8-small (c2=256, a2=True, area=4, n=3)
 
   # Downsample dari P3 ke P4
-  - [-1, 1, Conv, [256, 3, 2]] # 25
-  - [[-1, 13], 1, Concat, [1]] # 26 cat head P4
-  - [-1, 3, A2C2f, [512, True, 4]] # 27 P4/16-medium (c2=512, a2=True, area=4, n=3)
+  - [-1, 1, Conv, [256, 3, 2]] # 18
+  - [[-1, 6], 1, Concat, [1]] # 19 cat head P4 (concat dengan backbone P4 layer 6)
+  - [-1, 3, A2C2f, [512, True, 4]] # 20 P4/16-medium (c2=512, a2=True, area=4, n=3)
 
-  # Downsample dari P4 ke P5
-  - [-1, 1, Conv, [512, 3, 2]] # 28
-  - [[-1, 9], 1, Concat, [1]] # 29 cat head P5 (concat dengan output SPPF dari layer 9)
-  - [-1, 3, A2C2f, [1024, True, 4]] # 30 P5/32-large (c2=1024, a2=True, area=4, n=3)
-
-  # Detection head dengan 4 skala: P2, P3, P4, P5
-  - [[21, 24, 27, 30], 1, Detect, [nc]] # 31 Detect(P2/4, P3/8, P4/16, P5/32)
+  # Detection head dengan 3 skala: P2, P3, P4 (P5 removed to save memory)
+  - [[14, 17, 20], 1, Detect, [nc]] # 21 Detect(P2/4, P3/8, P4/16)
 
